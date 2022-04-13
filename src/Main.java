@@ -7,6 +7,7 @@ public class Main {
     public static String calc(String input) {
 
         String[] operators = {"+", "-", "/", "*"};
+        int result;
 
         Boolean isArabic;
         Boolean isRomano;
@@ -29,20 +30,30 @@ public class Main {
 
         if (expression.size() != 3) {
             try {
-                throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\nт.к. формат математической операции не удовлетворяет заданию - два операнда и один оператор (+, -, /, *)");
+                throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
+                        "т.к. формат математической операции не удовлетворяет заданию " +
+                        "- два операнда и один оператор (+, -, /, *)");
             } catch (IOException e) {
                 return e.getMessage();
             }
         }
-
-        int result = switch (expression.get(1)) {
-            case "+" -> Integer.parseInt(expression.get(0)) + Integer.parseInt(expression.get(2));
-            case "-" -> Integer.parseInt(expression.get(0)) - Integer.parseInt(expression.get(2));
-            case "*" -> Integer.parseInt(expression.get(0)) * Integer.parseInt(expression.get(2));
-            case "/" -> Integer.parseInt(expression.get(0)) / Integer.parseInt(expression.get(2));
-            default -> throw new IllegalStateException("Unexpected value: " + expression.get(1));
-        };
-
+        try {
+            result = switch (expression.get(1)) {
+                case "+" -> Integer.parseInt(expression.get(0)) + Integer.parseInt(expression.get(2));
+                case "-" -> Integer.parseInt(expression.get(0)) - Integer.parseInt(expression.get(2));
+                case "*" -> Integer.parseInt(expression.get(0)) * Integer.parseInt(expression.get(2));
+                case "/" -> Integer.parseInt(expression.get(0)) / Integer.parseInt(expression.get(2));
+                default -> throw new IllegalStateException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
+                        "Калькулятор умеет выполнять только операции сложения, вычитания, умножения и деления\n" +
+                        "и не поддерживает оператор: "
+                        + expression.get(1));
+            };
+        } catch (NumberFormatException e) {
+            return "ОШИБКА ВВОДА-ВЫВОДА!\n" +
+                    "ДВА операнда и ОДИН оператор, бро! - " + e.getMessage();
+        } catch (IllegalStateException e) {
+            return e.getMessage();
+        }
         return String.valueOf(result);
 
     }
@@ -54,7 +65,8 @@ public class Main {
         System.out.println(calc("5 / 2"));
         System.out.println(calc("5 + 2 +"));
         System.out.println(calc(" 5 + 2 "));
-        System.out.println(calc(" 5 / 0 "));
+        System.out.println(calc(" 5 / + "));
+        System.out.println(calc(" 5 % 2 "));
 
     }
 }
