@@ -5,6 +5,8 @@ import java.util.*;
 // Реализуй класс Main с методом public static String calc(String input).
 public class Main {
 
+    private static boolean runCalc = true;
+
     public static String calc(String input) {
 
         System.out.println("- ".repeat(80));
@@ -109,7 +111,8 @@ public class Main {
                 throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
                         "Калькулятор может принимать на вход числа от 1 до 10 включительно, не более");
             } catch (IOException e) {
-                return e.getMessage();
+                runCalc = false;
+                e.printStackTrace();
             }
         }
 
@@ -137,28 +140,34 @@ public class Main {
 
 
     public static void main(String[] args) {
-        System.out.println(calc("1 + 1"));
-        System.out.println(calc("10 + 10"));
-        System.out.println(calc("10 / 5"));
-        System.out.println(calc("5 / 2"));
-        System.out.println(calc("5 + 2 +"));
-        System.out.println(calc(" 5 + 2 "));
-        System.out.println(calc(" 5 / + "));
-        System.out.println(calc(" 5 % 2 "));
-        System.out.println(calc(" 5+2 "));
-        System.out.println(calc("1 + III"));
-        System.out.println(calc("V + III"));
-        System.out.println(calc("IX + III"));
-        System.out.println(calc("11 + 2"));
-        System.out.println(calc("1 - 2"));
-        System.out.println(calc("I - II"));
-        System.out.println(calc("III"));
-        System.out.println(calc("X/V"));
-        System.out.println(calc("V / II"));
-        System.out.println(calc("V * X"));
-        System.out.println(calc("5 * %"));
-        System.out.println(calc("XI * II"));
-        System.out.println(calc("1,2 * 2,5"));
+
+        Scanner scanner = new Scanner(System.in);
+
+        while (scanner.hasNextLine() && runCalc) {
+            System.out.println(calc(scanner.nextLine()));
+        }
+//        System.out.println(calc("1 + 1"));
+//        System.out.println(calc("10 + 10"));
+//        System.out.println(calc("10 / 5"));
+//        System.out.println(calc("5 / 2"));
+//        System.out.println(calc("5 + 2 +"));
+//        System.out.println(calc(" 5 + 2 "));
+//        System.out.println(calc(" 5 / + "));
+//        System.out.println(calc(" 5 % 2 "));
+//        System.out.println(calc(" 5+2 "));
+//        System.out.println(calc("1 + III"));
+//        System.out.println(calc("V + III"));
+//        System.out.println(calc("IX + III"));
+//        System.out.println(calc("11 + 2"));
+//        System.out.println(calc("1 - 2"));
+//        System.out.println(calc("I - II"));
+//        System.out.println(calc("III"));
+//        System.out.println(calc("X/V"));
+//        System.out.println(calc("V / II"));
+//        System.out.println(calc("V * X"));
+//        System.out.println(calc("5 * %"));
+//        System.out.println(calc("XI * II"));
+//        System.out.println(calc("1,2 * 2,5"));
     }
 }
 
