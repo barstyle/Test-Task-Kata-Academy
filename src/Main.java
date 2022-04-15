@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.*;
 
 // Реализуй класс Main с методом public static String calc(String input).
@@ -6,53 +7,62 @@ public class Main {
 
     public static String calc(String input) {
 
+        System.out.println("- ".repeat(80));
         System.out.println("Expression: " + input);
 
         String[] operators = {"+", "-", "/", "*"};
-        String operator = " ";
+        String operator = "";
         int countOperators = 0;
 
-        for (String o: operators) {
+        for (String o : operators) {
             if (input.contains(o)) {
                 operator = o;
-                countOperators++;
+                long operatorCount = input.chars().filter(ch -> ch == o.charAt(0)).count();
+                if (countOperators < operatorCount) countOperators = (int) operatorCount;
                 System.out.println("countOperators - " + countOperators);
             }
         }
 
-        if (countOperators != 1) {
+        if (countOperators > 1) {
             try {
                 throw new IOException("Оператор должен быть один и только: (+, -, /, *)");
-        } catch (IOException e) {
-                return e.getMessage();
+            } catch (IOException e) {
+                return e.getLocalizedMessage();
             }
-
+        } else if (countOperators < 1) {
+            try {
+                throw new IOException("Строка для нашего калькулятора не является математической операцией. " +
+                        "\nИспользуйте оператор: (+, -, /, *)");
+            } catch (IOException e) {
+                return e.getLocalizedMessage();
+            }
         }
 
         int result;
 
-        ArrayList<String> expression;
-        expression = new ArrayList<>(Arrays.asList(input
+        ArrayList<String> expression = new ArrayList<>(Arrays.asList(input
                 .replaceAll(" ", "")
-                .split("\\" + operator)));
+                .split(MessageFormat.format("\\{0}", operator))));
 
         System.out.println(Arrays.toString(expression.toArray()));
 
-        Boolean isArabic;
-        Boolean isRomano;
+        boolean isArabic;
+        boolean isRomano;
 
         HashMap<String, String> tupleRomano = new HashMap<>();
-        tupleRomano.put("I", "1");
-        tupleRomano.put("II", "2");
-        tupleRomano.put("III", "3");
-        tupleRomano.put("IV", "4");
-        tupleRomano.put("V", "5");
-        tupleRomano.put("VI", "6");
-        tupleRomano.put("VII", "7");
-        tupleRomano.put("VIII", "8");
-        tupleRomano.put("IX", "9");
-        tupleRomano.put("X", "10");
-
+        for (int i = 1; i < 4001; i ++) {
+            tupleRomano.put(Roman.arabicToRoman(i), String.valueOf(i));
+        }
+//        tupleRomano.put("I", "1");
+//        tupleRomano.put("II", "2");
+//        tupleRomano.put("III", "3");
+//        tupleRomano.put("IV", "4");
+//        tupleRomano.put("V", "5");
+//        tupleRomano.put("VI", "6");
+//        tupleRomano.put("VII", "7");
+//        tupleRomano.put("VIII", "8");
+//        tupleRomano.put("IX", "9");
+//        tupleRomano.put("X", "10");
 
 
         if (expression.size() != 2) {
@@ -65,11 +75,17 @@ public class Main {
             }
         }
 
-        isArabic = tupleRomano.containsValue(expression.get(0)) | tupleRomano.containsValue(expression.get(1));
-        isRomano = tupleRomano.containsKey(expression.get(1)) | tupleRomano.containsKey(expression.get(1));
+        String leftArgStr = expression.get(0);
+        String rightArgStr = expression.get(1);
 
-        System.out.println(isArabic);
-        System.out.println(isRomano);
+        int leftArgInt;
+        int rightArgInt;
+
+        isArabic = tupleRomano.containsValue(leftArgStr) | tupleRomano.containsValue(rightArgStr);
+        isRomano = tupleRomano.containsKey(leftArgStr) | tupleRomano.containsKey(rightArgStr);
+
+//        System.out.println(isArabic);
+//        System.out.println(isRomano);
 
         if (isArabic == isRomano) {
             try {
@@ -115,16 +131,16 @@ public class Main {
         }
 
         if (isRomano & result > 1) {
-            tupleRomano.put("XI", "11");
-            tupleRomano.put("XII", "12");
-            tupleRomano.put("XIII", "13");
-            tupleRomano.put("XIV", "14");
-            tupleRomano.put("XV", "15");
-            tupleRomano.put("XVI", "16");
-            tupleRomano.put("XVII", "17");
-            tupleRomano.put("XVIII", "18");
-            tupleRomano.put("XIX", "19");
-            tupleRomano.put("XX", "20");
+//            tupleRomano.put("XI", "11");
+//            tupleRomano.put("XII", "12");
+//            tupleRomano.put("XIII", "13");
+//            tupleRomano.put("XIV", "14");
+//            tupleRomano.put("XV", "15");
+//            tupleRomano.put("XVI", "16");
+//            tupleRomano.put("XVII", "17");
+//            tupleRomano.put("XVIII", "18");
+//            tupleRomano.put("XIX", "19");
+//            tupleRomano.put("XX", "20");
 
             for (String res : tupleRomano.keySet()) {
                 if (tupleRomano.get(res).equals(String.valueOf(result))) {
@@ -133,8 +149,9 @@ public class Main {
             }
         }
         if (isArabic) return String.valueOf(result);
-        return "В Риме нет чисел меньше Единицы - только ВПЕРЕД! - только НАВЕРХ!";
+        return "В Риме нет чисел меньше Единицы - только ВПЕРЕД! - только ВВЕРХ! - К ЗВЕЗДАМ!!!";
     }
+
 
     public static void main(String[] args) {
         System.out.println(calc("1 + 1"));
@@ -153,5 +170,9 @@ public class Main {
         System.out.println(calc("1 - 2"));
         System.out.println(calc("I - II"));
         System.out.println(calc("III"));
+        System.out.println(calc("X/V"));
+        System.out.println(calc("V / II"));
+        System.out.println(calc("V * X"));
     }
 }
+
