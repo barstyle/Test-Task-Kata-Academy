@@ -14,12 +14,14 @@ public class Main {
         String operator = "";
         int countOperators = 0;
 
+        // Проверяем на наличие операторов
         for (String o : operators) {
             if (input.contains(o)) {
                 operator = o;
+                //Считаем количество операторов
+                countOperators++;
                 long operatorCount = input.chars().filter(ch -> ch == o.charAt(0)).count();
                 if (countOperators < operatorCount) countOperators = (int) operatorCount;
-                System.out.println("countOperators - " + countOperators);
             }
         }
 
@@ -38,6 +40,8 @@ public class Main {
             }
         }
 
+        System.out.println("countOperators - " + countOperators);
+
         int result;
 
         ArrayList<String> expression = new ArrayList<>(Arrays.asList(input
@@ -46,24 +50,13 @@ public class Main {
 
         System.out.println(Arrays.toString(expression.toArray()));
 
-        boolean isArabic;
-        boolean isRomano;
+        boolean[] isArabic = new boolean[2];
+        boolean[] isRomano = new boolean[2];
 
         HashMap<String, String> tupleRomano = new HashMap<>();
-        for (int i = 1; i < 4001; i ++) {
+        for (int i = 1; i < 4001; i++) {
             tupleRomano.put(Roman.arabicToRoman(i), String.valueOf(i));
         }
-//        tupleRomano.put("I", "1");
-//        tupleRomano.put("II", "2");
-//        tupleRomano.put("III", "3");
-//        tupleRomano.put("IV", "4");
-//        tupleRomano.put("V", "5");
-//        tupleRomano.put("VI", "6");
-//        tupleRomano.put("VII", "7");
-//        tupleRomano.put("VIII", "8");
-//        tupleRomano.put("IX", "9");
-//        tupleRomano.put("X", "10");
-
 
         if (expression.size() != 2) {
             try {
@@ -81,75 +74,65 @@ public class Main {
         int leftArgInt;
         int rightArgInt;
 
-        isArabic = tupleRomano.containsValue(leftArgStr) | tupleRomano.containsValue(rightArgStr);
-        isRomano = tupleRomano.containsKey(leftArgStr) | tupleRomano.containsKey(rightArgStr);
+        isArabic[0] = tupleRomano.containsValue(leftArgStr);
+        isArabic[1] = tupleRomano.containsValue(rightArgStr);
 
-//        System.out.println(isArabic);
-//        System.out.println(isRomano);
+        isRomano[0] = tupleRomano.containsKey(leftArgStr);
+        isRomano[1] = tupleRomano.containsKey(rightArgStr);
 
-        if (isArabic == isRomano) {
+        if (isArabic[0] != isArabic[1] && isRomano[0] != isRomano[1]) {
             try {
                 throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
-                        "т.к. формат математической операции не удовлетворяет заданию " +
-                        "- Либо only РИМСКИЕ - Либо only АРАБСКИЕ, камон!?");
+                        "используются одновременно разные системы счисления");
             } catch (IOException e) {
                 return e.getMessage();
             }
         }
 
-        if (isRomano) {
+        if (isRomano[0] & isRomano[1]) {
+            leftArgInt = Roman.romanToArabic(leftArgStr);
+            rightArgInt = Roman.romanToArabic(rightArgStr);
             expression.set(0, tupleRomano.get(expression.get(0)));
             expression.set(1, tupleRomano.get(expression.get(1)));
-        }
+        } else {
+            try {
+                leftArgInt = Integer.parseInt(leftArgStr);
+                rightArgInt = Integer.parseInt(rightArgStr);
+            } catch (NumberFormatException e) {
+                return "ОШИБКА ВВОДА-ВЫВОДА!\n" +
+                        "т.к. строка не является математической операцией";
+            }
 
-        try {
-            result = switch (operator) {
-                case "+" -> Integer.parseInt(expression.get(0)) + Integer.parseInt(expression.get(1));
-                case "-" -> Integer.parseInt(expression.get(0)) - Integer.parseInt(expression.get(1));
-                case "*" -> Integer.parseInt(expression.get(0)) * Integer.parseInt(expression.get(1));
-                case "/" -> Integer.parseInt(expression.get(0)) / Integer.parseInt(expression.get(1));
-                default -> throw new IllegalStateException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
-                        "Калькулятор умеет выполнять только операции сложения, вычитания, умножения и деления\n" +
-                        "и не поддерживает оператор: "
-                        + expression.get(1));
-            };
-        } catch (NumberFormatException e) {
-            return "ОШИБКА ВВОДА-ВЫВОДА!\n" +
-                    "ДВА операнда и ОДИН оператор, бро! - " + e.getMessage();
-        } catch (IllegalStateException e) {
-            return e.getMessage();
         }
-
-        if (Integer.parseInt(expression.get(0)) < 1 | Integer.parseInt(expression.get(0)) > 10
-                | Integer.parseInt(expression.get(1)) < 1 | Integer.parseInt(expression.get(1)) > 10) {
+        if (leftArgInt < 1 | leftArgInt > 10 | rightArgInt < 1 | rightArgInt > 10) {
             try {
                 throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
-                        "Калькулятор должен принимать на вход числа от 1 до 10 включительно, не более");
+                        "Калькулятор может принимать на вход числа от 1 до 10 включительно, не более");
             } catch (IOException e) {
                 return e.getMessage();
             }
         }
 
-        if (isRomano & result > 1) {
-//            tupleRomano.put("XI", "11");
-//            tupleRomano.put("XII", "12");
-//            tupleRomano.put("XIII", "13");
-//            tupleRomano.put("XIV", "14");
-//            tupleRomano.put("XV", "15");
-//            tupleRomano.put("XVI", "16");
-//            tupleRomano.put("XVII", "17");
-//            tupleRomano.put("XVIII", "18");
-//            tupleRomano.put("XIX", "19");
-//            tupleRomano.put("XX", "20");
+        result = switch (operator) {
+            case "+" -> leftArgInt + rightArgInt;
+            case "-" -> leftArgInt - rightArgInt;
+            case "*" -> leftArgInt * rightArgInt;
+            case "/" -> leftArgInt / rightArgInt;
+            default -> throw new IllegalStateException("Что-то пошло не так");
+        };
 
-            for (String res : tupleRomano.keySet()) {
-                if (tupleRomano.get(res).equals(String.valueOf(result))) {
-                    return res;
+        if (isRomano[0] & isRomano[1]) {
+            if (result < 1) {
+                try {
+                    throw new IOException("ОШИБКА ВВОДА-ВЫВОДА!\n" +
+                            "в римской системе нет отрицательных чисел и нуля");
+                } catch (IOException e) {
+                    return e.getMessage();
                 }
             }
+            return Roman.arabicToRoman(result);
         }
-        if (isArabic) return String.valueOf(result);
-        return "В Риме нет чисел меньше Единицы - только ВПЕРЕД! - только ВВЕРХ! - К ЗВЕЗДАМ!!!";
+        return String.valueOf(result);
     }
 
 
@@ -173,6 +156,9 @@ public class Main {
         System.out.println(calc("X/V"));
         System.out.println(calc("V / II"));
         System.out.println(calc("V * X"));
+        System.out.println(calc("5 * %"));
+        System.out.println(calc("XI * II"));
+        System.out.println(calc("1,2 * 2,5"));
     }
 }
 
